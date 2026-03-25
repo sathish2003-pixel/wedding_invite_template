@@ -145,15 +145,21 @@ export const useBuilderStore = create<BuilderStore>()(
     const state = get();
     set({ isPublishing: true });
 
-    // Generate slug if not set
+    // Generate slug
     const bride = (state.brideName || "bride").toLowerCase().replace(/[^a-z0-9]/g, "");
     const groom = (state.groomName || "groom").toLowerCase().replace(/[^a-z0-9]/g, "");
     const slug = state.slug || `${groom}-weds-${bride}-${Date.now().toString(36)}`;
+    const baseUrl = window.location.origin;
+
+    // Try API with a short timeout (2s) — skip if no DB configured
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 2000);
 
     try {
       const response = await fetch("/api/weddings/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        signal: controller.signal,
         body: JSON.stringify({
           brideName: state.brideName,
           groomName: state.groomName,
@@ -176,9 +182,9 @@ export const useBuilderStore = create<BuilderStore>()(
           slug,
         }),
       });
+      clearTimeout(timeout);
 
       const data = await response.json();
-
       if (data.success) {
         set({
           isPublished: true,
@@ -189,16 +195,15 @@ export const useBuilderStore = create<BuilderStore>()(
         return;
       }
     } catch {
-      // API/DB unavailable — fall back to demo mode
+      clearTimeout(timeout);
     }
 
-    // Fallback: publish locally without database
-    const baseUrl = window.location.origin;
+    // Instant fallback — publish locally using preview route
     set({
       isPublished: true,
       isPublishing: false,
-      publishedUrl: `${baseUrl}/wedding/demo`,
-      slug: "demo",
+      publishedUrl: `${baseUrl}/wedding/preview`,
+      slug: slug,
     });
   },
 

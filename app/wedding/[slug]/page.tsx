@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   // For real weddings, fetch from API
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://shaadipage.vercel.app";
     const res = await fetch(`${baseUrl}/api/weddings/${params.slug}`, {
       cache: "no-store",
     });
@@ -49,7 +49,7 @@ export default async function WeddingSlugPage({ params }: Props) {
 
   // Fetch real wedding
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://shaadipage.vercel.app";
     const res = await fetch(`${baseUrl}/api/weddings/${params.slug}`, {
       cache: "no-store",
     });

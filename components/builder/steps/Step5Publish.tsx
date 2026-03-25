@@ -143,7 +143,7 @@ export function Step5Publish() {
         </label>
         <div className="flex items-center gap-2">
           <span className="font-mono text-[11px] text-white/40 flex-shrink-0">
-            shaadipage.in/
+            shaadipage.vercel.app/
           </span>
           <Input
             value={store.slug || autoSlug}

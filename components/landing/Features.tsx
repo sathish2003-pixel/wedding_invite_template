@@ -27,7 +27,7 @@ const features = [
   {
     icon: "🌐",
     title: "Free Custom URL",
-    desc: "Get your own: shaadipage.in/rahul-weds-priya",
+    desc: "Get your own: shaadipage.vercel.app/rahul-weds-priya",
   },
   {
     icon: "💬",

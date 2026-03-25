@@ -99,7 +99,7 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://shaadipage.vercel.app";
 
     return NextResponse.json({
       success: true,
