@@ -1,0 +1,2041 @@
+================================================================================
+  SHAADIPAGE — WEDDING INVITATION WEBSITE BUILDER
+  FULL PROJECT REQUIREMENTS & PROMPT DOCUMENT
+  Version 1.0 | ERK Enterprises
+================================================================================
+
+PROJECT NAME      : ShaadiPage
+TYPE              : Mini SaaS — Digital Wedding Invitation Builder
+FRAMEWORK         : Next.js 14 (App Router, TypeScript)
+TARGET MARKET     : Indian Couples
+PRIMARY DEVICES   : Mobile (375px–414px), Tablet (768px–1024px), Desktop (1280px+)
+MONETIZATION      : One-time payment ₹999 / ₹1,499
+LIVE URL PATTERN  : shaadipage.in/wedding/[bride]-weds-[groom]-[year]
+
+================================================================================
+  TABLE OF CONTENTS
+================================================================================
+
+  1.  Tech Stack & Dependencies
+  2.  next.config.js Setup
+  3.  Master Image Reference List
+  4.  Color Palette System (6 Themes)
+  5.  Typography System
+  6.  Responsive Breakpoints
+  7.  Landing Page (app/page.tsx)
+  8.  Builder Page (app/builder/page.tsx)
+  9.  Invitation Page (app/wedding/[slug]/page.tsx)
+  10. Template Specifications (6 Templates)
+  11. RSVP Dashboard Page
+  12. API Routes
+  13. MongoDB Schemas
+  14. Zustand Store
+  15. Animation Specifications
+  16. Mobile-Specific Requirements (CRITICAL)
+  17. Tablet-Specific Requirements
+  18. Desktop-Specific Requirements
+  19. Sticky & Fixed Elements
+  20. Sharing Features (WhatsApp Focus)
+  21. File & Folder Structure
+  22. Environment Variables
+  23. Performance Requirements
+  24. Final Experience Goals
+
+================================================================================
+  1. TECH STACK & DEPENDENCIES
+================================================================================
+
+FRAMEWORK:
+  - Next.js 14 (App Router, TypeScript, strict mode)
+
+STYLING:
+  - Tailwind CSS (mobile-first utility classes)
+  - CSS Variables for theming
+
+ANIMATION:
+  - Framer Motion (all transitions, scroll reveals, stagger effects)
+  - canvas-confetti (celebration bursts on publish + page load)
+
+STATE MANAGEMENT:
+  - zustand (global form state, template selection, preview sync)
+  - react-hook-form + zod (all form validation)
+
+UTILITIES:
+  - nanoid (unique URL slug generation)
+  - date-fns (countdown timer, date formatting)
+  - react-hot-toast (toast notifications)
+
+FONTS (next/font/google):
+  - "Cormorant Garamond" — romantic serif for all section headings
+  - "Great Vibes"         — cursive script for couple names & monograms
+  - "DM Sans"             — clean body text, labels, buttons
+  - "Noto Sans Tamil"     — Tamil language support on invitation pages
+  - "Fira Code"           — URL display in builder
+
+NPM INSTALL COMMAND:
+  npm install framer-motion zustand react-hook-form zod @hookform/resolvers
+              nanoid date-fns canvas-confetti react-hot-toast
+
+================================================================================
+  2. NEXT.CONFIG.JS SETUP — REQUIRED FOR ALL EXTERNAL IMAGES
+================================================================================
+
+const nextConfig = {
+  images: {
+    remotePatterns: [
+      { protocol: 'https', hostname: 'images.unsplash.com'  },
+      { protocol: 'https', hostname: 'images.pexels.com'    },
+      { protocol: 'https', hostname: 'www.pexels.com'       },
+      { protocol: 'https', hostname: 'cdn.pixabay.com'      },
+    ],
+    unoptimized: true,
+  },
+};
+module.exports = nextConfig;
+
+NOTE: Use next/image with unoptimized={true} on all external URL images.
+      Always pass the sizes prop for mobile optimization.
+
+================================================================================
+  3. MASTER IMAGE REFERENCE LIST (All Free, Public URLs)
+================================================================================
+
+--- COUPLE / WEDDING PHOTOS (Indian couples) ---
+
+COUPLE_1_HERO (main hero, full-width backgrounds):
+  https://images.pexels.com/photos/1444442/pexels-photo-1444442.jpeg?w=1200&q=80
+
+COUPLE_2_PORTRAIT (portrait orientation, gallery):
+  https://images.pexels.com/photos/1045541/pexels-photo-1045541.jpeg?w=800&q=80
+
+COUPLE_3_CANDID (candid/natural, gallery):
+  https://images.pexels.com/photos/169198/pexels-photo-169198.jpeg?w=800&q=80
+
+COUPLE_4_OUTDOOR (outdoor shoot, gallery):
+  https://images.pexels.com/photos/1024993/pexels-photo-1024993.jpeg?w=800&q=80
+
+COUPLE_5_ROMANTIC (romantic, gallery):
+  https://images.pexels.com/photos/265722/pexels-photo-265722.jpeg?w=800&q=80
+
+COUPLE_6_TRADITIONAL (traditional attire, gallery):
+  https://images.pexels.com/photos/3014856/pexels-photo-3014856.jpeg?w=800&q=80
+
+COUPLE_7_CLOSEUP (closeup/intimate, gallery):
+  https://images.pexels.com/photos/1043474/pexels-photo-1043474.jpeg?w=600&q=80
+
+COUPLE_8_EVENING (evening/golden hour, gallery):
+  https://images.pexels.com/photos/2253870/pexels-photo-2253870.jpeg?w=800&q=80
+
+--- WEDDING VENUE & CEREMONY PHOTOS ---
+
+VENUE_1_GRAND_HALL (banquet hall):
+  https://images.pexels.com/photos/1616113/pexels-photo-1616113.jpeg?w=1200&q=80
+
+VENUE_2_OUTDOOR_MANDAP (outdoor mandap/garden):
+  https://images.pexels.com/photos/931177/pexels-photo-931177.jpeg?w=1200&q=80
+
+VENUE_3_RECEPTION (reception setup):
+  https://images.pexels.com/photos/587741/pexels-photo-587741.jpeg?w=1200&q=80
+
+VENUE_4_FLOWERS (floral decoration):
+  https://images.pexels.com/photos/931177/pexels-photo-931177.jpeg?w=800&q=80
+
+VENUE_5_LIGHTS (fairy lights / decor):
+  https://images.pexels.com/photos/1616113/pexels-photo-1616113.jpeg?w=800&q=80
+
+--- WEDDING DETAILS & DECOR ---
+
+DECOR_1_RINGS:
+  https://images.pexels.com/photos/265906/pexels-photo-265906.jpeg?w=600&q=80
+
+DECOR_2_FLOWERS:
+  https://images.pexels.com/photos/931177/pexels-photo-931177.jpeg?w=600&q=80
+
+DECOR_3_MEHENDI:
+  https://images.pexels.com/photos/1043474/pexels-photo-1043474.jpeg?w=600&q=80
+
+DECOR_4_CANDLES:
+  https://images.pexels.com/photos/3014856/pexels-photo-3014856.jpeg?w=600&q=80
+
+DECOR_5_TABLE:
+  https://images.pexels.com/photos/587741/pexels-photo-587741.jpeg?w=600&q=80
+
+--- LANDING PAGE IMAGES ---
+
+LANDING_HERO_BG:
+  https://images.pexels.com/photos/1444442/pexels-photo-1444442.jpeg?w=1600&q=80
+
+LANDING_FEATURE_1:
+  https://images.pexels.com/photos/1616113/pexels-photo-1616113.jpeg?w=800&q=80
+
+LANDING_FEATURE_2:
+  https://images.pexels.com/photos/931177/pexels-photo-931177.jpeg?w=800&q=80
+
+LANDING_HOW_IT_WORKS:
+  https://images.pexels.com/photos/2253870/pexels-photo-2253870.jpeg?w=1000&q=80
+
+--- TEMPLATE PREVIEW THUMBNAILS (shown on template selector cards) ---
+
+TEMPLATE_1_ROSE_PREVIEW:
+  https://images.pexels.com/photos/1444442/pexels-photo-1444442.jpeg?w=400&q=80
+
+TEMPLATE_2_ROYAL_PREVIEW:
+  https://images.pexels.com/photos/1616113/pexels-photo-1616113.jpeg?w=400&q=80
+
+TEMPLATE_3_EMERALD_PREVIEW:
+  https://images.pexels.com/photos/931177/pexels-photo-931177.jpeg?w=400&q=80
+
+TEMPLATE_4_MIDNIGHT_PREVIEW:
+  https://images.pexels.com/photos/3014856/pexels-photo-3014856.jpeg?w=400&q=80
+
+TEMPLATE_5_BLUSH_PREVIEW:
+  https://images.pexels.com/photos/265722/pexels-photo-265722.jpeg?w=400&q=80
+
+TEMPLATE_6_SAFFRON_PREVIEW:
+  https://images.pexels.com/photos/587741/pexels-photo-587741.jpeg?w=400&q=80
+
+--- TESTIMONIAL AVATARS ---
+
+TESTIMONIAL_1 (Priya & Rahul, Mumbai):
+  https://images.pexels.com/photos/1024993/pexels-photo-1024993.jpeg?w=200&q=80
+
+TESTIMONIAL_2 (Ananya & Vikram, Delhi):
+  https://images.pexels.com/photos/1045541/pexels-photo-1045541.jpeg?w=200&q=80
+
+TESTIMONIAL_3 (Meera & Arjun, Chennai):
+  https://images.pexels.com/photos/169198/pexels-photo-169198.jpeg?w=200&q=80
+
+TESTIMONIAL_4 (Sneha & Karthik, Bangalore):
+  https://images.pexels.com/photos/265722/pexels-photo-265722.jpeg?w=200&q=80
+
+================================================================================
+  4. COLOR PALETTE SYSTEM — 6 THEMES
+================================================================================
+
+Each theme has 4 values: primary | accent | background | dark
+
+THEME 1 — "Rose Gold" (DEFAULT, most popular):
+  primary    : #B76E79
+  accent     : #D4A574
+  bg         : #FDF6F0
+  dark       : #2C1810
+  usage      : Rose petals, Indian romance aesthetic
+
+THEME 2 — "Royal Blue":
+  primary    : #1B3A6B
+  accent     : #C9A84C
+  bg         : #F8F6FF
+  dark       : #0D1B33
+  usage      : North Indian royal / Mughal wedding aesthetic
+
+THEME 3 — "Emerald Garden":
+  primary    : #2D5A27
+  accent     : #D4AF37
+  bg         : #F0F8F0
+  dark       : #1A3A15
+  usage      : South Indian traditional (Tamil/Telugu/Kannada)
+
+THEME 4 — "Midnight Luxe":
+  primary    : #1A1A2E
+  accent     : #C9A84C
+  bg         : #0F0F1E
+  dark       : #080812
+  usage      : Modern dark luxury, urban couples
+
+THEME 5 — "Blush Pink":
+  primary    : #E8739A
+  accent     : #F4C2D0
+  bg         : #FFF5F8
+  dark       : #5C1A35
+  usage      : Modern romantic, spring/summer weddings
+
+THEME 6 — "Saffron Festival":
+  primary    : #FF6B35
+  accent     : #FFD700
+  bg         : #FFF8F0
+  dark       : #8B1A00
+  usage      : Vibrant, festive, large family celebrations
+
+THEME SWITCHING:
+  - Clicking a theme swatch in builder INSTANTLY updates live preview
+  - Framer Motion 0.4s color transition on all themed elements
+  - CSS variables used: --color-primary, --color-accent, --color-bg, --color-dark
+  - All 6 invitation templates respect the chosen theme's color variables
+
+================================================================================
+  5. TYPOGRAPHY SYSTEM
+================================================================================
+
+FONT ROLES:
+  Great Vibes        : Couple names, monograms, romantic headings (cursive)
+  Cormorant Garamond : Section headings, event names, quotes (serif)
+  DM Sans            : Body text, labels, nav, buttons, captions (sans-serif)
+  Noto Sans Tamil    : Tamil/regional language text (when language = 'ta' etc.)
+
+SIZE SCALE (mobile → tablet → desktop):
+
+  Couple Names (Great Vibes):
+    Mobile  : 72px–80px
+    Tablet  : 96px–110px
+    Desktop : 120px–140px
+    MINIMUM : Never below 48px even on smallest mobile (looks bad)
+
+  Section Headings (Great Vibes):
+    Mobile  : 40px–52px
+    Tablet  : 52px–64px
+    Desktop : 56px–72px
+
+  Subheadings (Cormorant Garamond):
+    Mobile  : 24px–32px
+    Tablet  : 28px–36px
+    Desktop : 32px–52px
+
+  Body Text (DM Sans):
+    Mobile  : 14px–16px
+    Tablet  : 15px–17px
+    Desktop : 15px–18px
+
+  Countdown Numbers (Cormorant Garamond):
+    Mobile  : 48px–56px
+    Tablet  : 56px–64px
+    Desktop : 64px–80px
+
+  Monogram Closing (Great Vibes):
+    Mobile  : 80px–96px
+    Tablet  : 96px–110px
+    Desktop : 120px–140px
+
+FLUID TYPOGRAPHY:
+  Use clamp() for all major text sizes:
+    Couple name: clamp(72px, 12vw, 140px)
+    Section heading: clamp(40px, 6vw, 72px)
+    Body: clamp(14px, 1.5vw, 18px)
+
+================================================================================
+  6. RESPONSIVE BREAKPOINTS
+================================================================================
+
+BREAKPOINT SYSTEM:
+  xs     : 320px  (small Android phones — Galaxy A series)
+  sm     : 375px  (iPhone SE, standard mobile — PRIMARY TARGET)
+  md     : 390px  (iPhone 14 Pro — most common in India premium)
+  lg     : 414px  (iPhone Plus models)
+  xl     : 768px  (iPad Mini, tablets — TABLET TARGET)
+  2xl    : 1024px (iPad Pro, large tablets)
+  3xl    : 1280px (laptops — DESKTOP TARGET)
+  4xl    : 1440px (large monitors)
+  5xl    : 1920px (full HD monitors)
+
+Tailwind config additions needed:
+  screens: {
+    'xs': '320px',
+    'sm': '375px',
+    'md': '768px',
+    'lg': '1024px',
+    'xl': '1280px',
+    '2xl': '1440px',
+  }
+
+LAYOUT STRATEGY:
+  Mobile First — base styles = mobile, media queries scale UP
+  Touch-first interactions — hover effects are enhancement only
+  No content hidden on any breakpoint — everything accessible on all devices
+
+================================================================================
+  7. LANDING PAGE — app/page.tsx
+================================================================================
+
+--- HERO SECTION ---
+
+HEIGHT:
+  Mobile  : 100dvh (dynamic viewport height — accounts for browser chrome)
+  Tablet  : 100vh
+  Desktop : 100vh
+
+BACKGROUND LAYERS (stacked, z-index order):
+  Layer 1 (z-0) : next/image LANDING_HERO_BG, object-cover object-center
+  Layer 2 (z-1) : Gradient overlay:
+                  linear-gradient(135deg,
+                    rgba(44,24,16,0.85) 0%,
+                    rgba(183,110,121,0.55) 50%,
+                    rgba(44,24,16,0.92) 100%)
+  Layer 3 (z-2) : Floating rose petals — 24 absolutely-positioned divs:
+                  - Size: random 8px–20px each
+                  - Shape: border-radius 50% 0 50% 0 (petal-like)
+                  - Color: rgba(183,110,121,0.7)
+                  - Animation: float down + sway left/right (CSS keyframes)
+                  - Duration: random 6s–14s per petal
+                  - Delay: random 0s–8s per petal
+                  - Infinite loop
+
+CONTENT LAYOUT:
+  Mobile  : Single column, centered, px-6
+  Tablet  : Single column, centered, max-w-2xl, px-8
+  Desktop : Two column — content left (55%), phone mockup right (45%)
+
+CONTENT ELEMENTS (Framer Motion staggerContainer, staggerChildren: 0.12s):
+  Each child: initial {y: 30, opacity: 0} → animate {y: 0, opacity: 1}
+
+  1. Badge pill:
+     "✨ 10,000+ Couples Chose ShaadiPage"
+     Style: glass pill, backdrop-blur-md, bg rgba(255,255,255,0.1),
+            border 1px rgba(255,255,255,0.25), rose gold text, rounded-full,
+            px-5 py-2, DM Sans 13px
+
+  2. Heading Line 1:
+     "Your Love Story,"
+     Font: Cormorant Garamond
+     Size: clamp(52px, 10vw, 96px)
+     Color: white
+
+  3. Heading Line 2:
+     "Beautifully Told"
+     Font: Great Vibes
+     Size: clamp(64px, 12vw, 110px)
+     Color: #D4A574 (gold accent)
+     Text-shadow: 0 2px 20px rgba(183,110,121,0.5)
+
+  4. Subtext:
+     "Create a stunning digital wedding invitation in minutes.
+      Share with your guests instantly via WhatsApp & Instagram."
+     Font: DM Sans 16px–17px, rgba(255,255,255,0.85)
+     Max-width: 520px, centered
+
+  5. CTA Buttons row:
+     Mobile  : Stack vertically, full width each
+     Tablet  : Side by side, auto width
+     Desktop : Side by side, auto width
+
+     Primary: "Create Your Invitation →"
+     Style: background linear-gradient(135deg, #B76E79, #D4A574),
+            white text, px-8 py-4, rounded-full, shadow-2xl,
+            DM Sans 16px font-semibold, hover: scale(1.05) brightness(1.05)
+
+     Secondary: "See Live Example ↓"
+     Style: transparent bg, border 2px white, white text,
+            px-8 py-4, rounded-full, DM Sans 16px,
+            hover: bg rgba(255,255,255,0.1)
+
+  6. Social proof:
+     "⭐⭐⭐⭐⭐  Loved by 10,000+ couples across India"
+     DM Sans 14px, rgba(255,255,255,0.65), centered
+
+PHONE MOCKUP (desktop right side, hidden on mobile):
+  Width: 280px
+  Frame: CSS phone shape — dark bg, border-radius 3rem, border 8px #1a1a1a,
+         shadow: 0 40px 80px rgba(0,0,0,0.6)
+  Content: next/image COUPLE_1_HERO fills phone screen, object-cover
+  Overlay at bottom: glass bar with "Rahul ♡ Priya" — Great Vibes 28px white
+  Animation: subtle float up-down (CSS keyframe, 4s ease-in-out infinite)
+
+SCROLL INDICATOR:
+  Position: absolute bottom-8 left-1/2 -translate-x-1/2
+  Content: "↓" chevron + "Scroll to explore" DM Sans 12px white/50
+  Animation: bounce CSS keyframe (translateY 0 → 8px → 0, 1.5s infinite)
+
+--- STATS BAR (below hero) ---
+
+Layout:
+  Mobile  : 2x2 grid
+  Tablet  : 4 column row
+  Desktop : 4 column row, centered, max-w-5xl
+
+Background: #2C1810 (dark rose), py-8–py-10
+
+4 Stats:
+  "10,000+"   — Invitations Created
+  "6"         — Premium Templates
+  "₹999"      — One-time Price
+  "4.9★"      — Average Rating
+
+Each stat:
+  Number: Cormorant Garamond clamp(32px,5vw,44px), color #D4A574
+  Label:  DM Sans 12px–13px, rgba(255,255,255,0.55)
+  Divider: 1px vertical rgba(212,165,116,0.25) between stats (hidden on mobile 2x2)
+
+--- FEATURES SECTION ---
+
+Heading: "Everything for the Perfect Digital Invite"
+  Font: Cormorant Garamond clamp(36px,5vw,52px), color #2C1810, text-center
+Subheading: "Crafted specifically for Indian weddings"
+  Font: DM Sans 16px, color gray-500, text-center, mb-12
+
+Grid:
+  Mobile  : 1 column (single card per row)
+  Tablet  : 2 columns, gap-5
+  Desktop : 3 columns, gap-6
+
+6 Feature Cards:
+  Style: white bg, rounded-2xl, p-6, shadow-md,
+         hover: -translate-y-2 transition-all duration-300 shadow-xl
+  Animation: Framer Motion useInView, stagger 0.08s, y:30→0 opacity:0→1
+
+  Icon circle: 56x56px, rose gold gradient bg, emoji 28px, rounded-full, mb-4
+
+  1. 🎨 "6 Premium Templates"
+     "Crafted by designers for Indian weddings.
+      Rose Garden, Royal Indigo, Emerald Tradition & more."
+
+  2. ⚡ "Instant Live Preview"
+     "See your invitation update in real-time as you fill in each detail."
+
+  3. 📱 "Mobile First Design"
+     "Looks stunning on every phone. Perfect for WhatsApp sharing."
+
+  4. ⏳ "Live Countdown Timer"
+     "A beautiful real-time countdown to your wedding day on every invite."
+
+  5. 🌐 "Free Custom URL"
+     "Get your own: shaadipage.in/rahul-weds-priya"
+
+  6. 💬 "One-tap WhatsApp Share"
+     "Pre-filled message ready to send to all your guests instantly."
+
+--- TEMPLATE SHOWCASE SECTION ---
+
+Background: #FDF6F0 (warm cream), py-20
+
+Heading: "Choose Your Dream Template"
+  Font: Cormorant Garamond clamp(36px,5vw,52px), text-center
+Subheading: "6 handcrafted designs for every style of Indian wedding"
+  Font: DM Sans 16px, gray, text-center
+
+TEMPLATE CARDS LAYOUT:
+  Mobile  : Horizontal scroll (overflow-x auto, snap-x mandatory, gap-4, px-6)
+            Min-width of each card: 240px
+  Tablet  : Horizontal scroll OR 2-col grid
+  Desktop : 3-column grid, gap-6, max-w-6xl mx-auto
+
+Each Template Card:
+  Aspect ratio: 2:3 (portrait, like a phone)
+  Min-width (mobile scroll): 240px
+  Border-radius: 20px
+  Overflow: hidden
+  Scroll snap: snap-start
+
+  TOP 60% — Image area:
+    next/image with correct template preview URL, object-cover
+    Color overlay: theme primary color, opacity 0.25
+    Bottom of image: couple name overlay "Rahul ♡ Priya" — Great Vibes 28px white
+
+  BOTTOM 40% — Info area:
+    Background: white, p-5
+    Template name: Cormorant Garamond 20px bold, dark
+    2-line description: DM Sans 13px, gray
+    Color dot swatch: 16px circle in theme primary color
+    "Most Popular" badge (Template 1 ONLY):
+      Position: absolute top-3 right-3
+      Style: rose gold bg, white text, DM Sans 11px, rounded-full, px-3 py-1
+
+  HOVER STATE (desktop):
+    Card: scale(1.03), shadow-2xl
+    "Use This Template →" button slides up from bottom:
+      rose gold gradient bg, white text, full width, py-3, rounded-b-xl,
+      Framer Motion: y: 40 → 0 on hover
+
+  CLICK: navigate to /builder?template=[1-6]
+
+--- HOW IT WORKS SECTION ---
+
+Background: rose gold gradient (#B76E79 → #D4A574)
+Heading: "Your Invitation in 3 Simple Steps"
+  Font: Cormorant Garamond clamp(36px,5vw,52px), white, text-center
+
+LAYOUT:
+  Mobile  : Vertical stack (3 steps, each centered, connected by dashed line)
+  Tablet  : Horizontal 3-step row
+  Desktop : Horizontal 3-step row with image mockup on right
+
+3 Steps:
+  Each step: icon circle 72px (white bg, themed icon), step number badge,
+             title Cormorant Garamond 24px white, description DM Sans 15px white/75
+  Connecting line between steps: dashed white line, hidden on mobile stack
+
+  Step 1: 📝 "Fill Your Details"
+    "Add names, dates, venue, and your love story"
+
+  Step 2: 🎨 "Choose Your Style"
+    "Pick from 6 gorgeous templates and color themes"
+
+  Step 3: 💬 "Share With Everyone"
+    "Get your link and send to all guests via WhatsApp"
+
+HOW IT WORKS IMAGE:
+  Mobile  : Hidden
+  Tablet  : Below steps, centered, rounded-3xl
+  Desktop : Right side column, phone-frame-wrapped next/image LANDING_HOW_IT_WORKS
+
+--- PRICING SECTION ---
+
+Background: white, py-20
+Heading: "Simple Pricing, No Surprises"
+  Font: Cormorant Garamond clamp(36px,5vw,52px), text-center
+Subheading: "One-time payment. No subscription. Yours forever."
+  Font: DM Sans 16px, gray, text-center
+
+PRICING CARDS LAYOUT:
+  Mobile  : Stacked vertically (1 col)
+  Tablet  : 3-column row, equal width
+  Desktop : 3-column row, center card elevated (scale-105 + rose gold border)
+
+3 Plans:
+
+FREE — ₹0:
+  Features:
+    ✓ 1 template (Rose Garden only)
+    ✓ Basic countdown timer
+    ✓ 3 gallery photos max
+    ✗ ShaadiPage watermark shown
+    ✓ 30 days active
+    ✗ No custom URL
+    ✗ No background music
+  CTA: "Start Free" (outline rose gold button)
+
+PREMIUM — ₹999 [MOST POPULAR — badge on card]:
+  Card highlight: rose gold border-2, scale-105 on desktop
+  Features:
+    ✓ All 6 premium templates
+    ✓ No ShaadiPage watermark
+    ✓ Custom URL slug (edit your link)
+    ✓ 8 gallery photos
+    ✓ Background music (8 tracks)
+    ✓ 1 year active
+    ✓ WhatsApp priority support
+    ✓ Live countdown timer
+  CTA: "Get Premium" (rose gold filled button)
+
+PREMIUM PLUS — ₹1,499:
+  Features: All Premium features PLUS:
+    ✓ RSVP collection system
+    ✓ Meal preference tracking
+    ✓ Guest list CSV export
+    ✓ Statistics dashboard (views, shares)
+    ✓ Lifetime active (never expires)
+    ✓ Priority phone support
+  CTA: "Get Premium Plus" (dark #2C1810 filled button)
+
+Each Card Style:
+  bg: white, rounded-3xl, p-8, shadow-lg
+  Price: Cormorant Garamond clamp(48px,7vw,64px), color primary, text-center
+  ₹ symbol: Cormorant Garamond 28px, same color
+  Feature list: DM Sans 14px–15px, checkmark ✓ in rose gold circle 20px,
+                ✗ items gray with strikethrough
+
+--- TESTIMONIALS SECTION ---
+
+Background: #FDF6F0, py-16–py-20
+
+Heading: "Couples Who Chose ShaadiPage"
+  Font: Cormorant Garamond clamp(36px,5vw,52px), text-center
+
+LAYOUT:
+  Mobile  : Horizontal scroll (snap-x, gap-4, px-6), each card min-w-280px
+  Tablet  : 2-column grid
+  Desktop : 4-column grid, gap-5
+
+4 Testimonial Cards:
+  Style: white bg, rounded-2xl, p-6, shadow-md
+  Top: Avatar (64px circular next/image, border-2 rose gold) + Name + City + Date
+  Stars: ⭐⭐⭐⭐⭐ rose gold color
+  Quote: Cormorant Garamond italic 18px, dark, line-height 1.7
+
+  1. TESTIMONIAL_1 image | "Priya & Rahul" | Mumbai | Feb 2025
+     "Our guests were amazed! Everyone said it was the most beautiful
+      wedding invitation they had ever received. Worth every rupee."
+
+  2. TESTIMONIAL_2 image | "Ananya & Vikram" | New Delhi | Jan 2025
+     "Created our invitation in 15 minutes. The Royal Blue template
+      was perfect for our North Indian wedding. Highly recommend!"
+
+  3. TESTIMONIAL_3 image | "Meera & Arjun" | Chennai | Mar 2025
+     "The Emerald Tradition template with Tamil text was exactly what
+      we wanted. Our families loved it. The countdown timer was a hit!"
+
+  4. TESTIMONIAL_4 image | "Sneha & Karthik" | Bangalore | Apr 2025
+     "Shared it on WhatsApp and got calls from relatives saying how
+      modern and beautiful it was. The RSVP feature saved us so much time!"
+
+--- FOOTER ---
+
+Background: #2C1810 (dark rose)
+Text: rgba(255,255,255,0.75)
+
+LAYOUT:
+  Mobile  : 2-column grid (logo/tagline top, links below)
+  Tablet  : 3-column grid
+  Desktop : 4-column layout
+
+Columns:
+  Col 1: Logo "ShaadiPage" (Great Vibes 32px rose gold) +
+          tagline "Beautiful invitations for beautiful moments" (DM Sans 14px) +
+          WhatsApp support button (green, "Chat with us")
+  Col 2: Product — Create Invite, Templates, Pricing, Examples
+  Col 3: Support — How It Works, FAQ, Contact Us, Privacy Policy
+  Col 4: Follow Us — Instagram, Facebook, Pinterest icons (rose gold on hover)
+
+Bottom bar:
+  "Made with ❤️ in India 🇮🇳  ·  © 2025 ShaadiPage. All rights reserved."
+  Top border: 1px rgba(212,165,116,0.2)
+
+================================================================================
+  8. BUILDER PAGE — app/builder/page.tsx
+================================================================================
+
+--- TOP BAR (sticky, height 56px) ---
+
+Mobile:
+  Left  : "ShaadiPage" Great Vibes 26px rose gold
+  Center: Step indicator "2 / 5" with dots
+  Right : "Preview 👁" link (switches to preview tab)
+
+Tablet:
+  Left  : Logo
+  Center: "Step 2 of 5 — Wedding Events" text
+  Right : "👁 Preview" tab button + "Publish 🎉" button (disabled until step 5)
+
+Desktop:
+  Left  : Logo
+  Center: Step progress bar (5 labeled steps with connecting line)
+  Right : "Open Preview ↗" + "Publish 🎉" button (rose gold gradient, enabled step 5+)
+
+Style: bg rgba(20,10,8,0.95), backdrop-blur-xl, border-bottom 1px rgba(255,255,255,0.08)
+
+--- BUILDER MAIN LAYOUT ---
+
+Mobile  : Single column, full screen
+          Tab bar at TOP: [✏️ Edit] [👁 Preview] (sticky below top bar)
+          Only one panel visible at a time (full screen)
+
+Tablet  : Single column with floating preview button OR
+          Top-bottom split: form top 50%, preview bottom 50%
+
+Desktop : Two-column CSS grid: 45% form | 55% preview
+          Both panels full height, independent scroll
+          No tab bar needed (both visible simultaneously)
+
+--- FORM PANEL STYLES ---
+
+Background: #1A1A1A (dark)
+Text: white
+Padding: p-6
+Overflow: scroll (independent of page)
+
+Input field styles (all form inputs):
+  Background: rgba(255,255,255,0.07)
+  Border: 1px solid rgba(255,255,255,0.14)
+  Border-radius: 12px
+  Padding: 12px 16px
+  Color: white
+  Placeholder: rgba(255,255,255,0.35)
+  Focus: border-color #B76E79, box-shadow 0 0 0 3px rgba(183,110,121,0.2)
+  Font: DM Sans 15px
+
+Label style: DM Sans 13px, rgba(255,255,255,0.65), mb-1, uppercase letter-spacing-wide
+
+--- STEP PROGRESS INDICATOR ---
+
+Mobile  : 5 small numbered circles connected by thin line, top of form panel
+          Active: rose gold filled, Completed: rose gold + checkmark, Inactive: gray
+
+Tablet  : Same as mobile, slightly larger
+Desktop : Full step labels: "1 Couple · 2 Events · 3 Photos · 4 Design · 5 Publish"
+          Connected by line, active step highlighted
+
+ANIMATION:
+  Step advance: Framer Motion slide-out left (x: 0 → -60, opacity 0),
+                next step slides in right (x: 60 → 0, opacity 0 → 1), spring
+
+--- STEP 1 — THE COUPLE 💑 ---
+
+Fields:
+  Bride's Name*       : text input, required, placeholder "e.g. Priya"
+  Groom's Name*       : text input, required, placeholder "e.g. Rahul"
+  Bride's Family      : text input, optional, placeholder "D/O Mr. & Mrs. Sharma"
+  Groom's Family      : text input, optional, placeholder "S/O Mr. & Mrs. Verma"
+  Custom Message      : textarea 4 rows, 150 char max, optional
+                        placeholder "With the blessings of our families..."
+  Wedding Hashtag     : text input, optional, placeholder "#RahulWedsPriya"
+
+Language Selector:
+  Style: horizontal pill buttons, flex-wrap
+  Options: [English] [हिंदी] [தமிழ்] [తెలుగు] [ಕನ್ನಡ] [മലയാളം]
+  Active pill: bg #B76E79, white text, border #B76E79
+  Inactive: transparent, white/50 text, border rgba(255,255,255,0.2)
+  Mobile: wrap to 2 rows if needed
+
+Couple Photo Selector:
+  Label: "Choose Your Couple Photo"
+  Subtext: "Select from our curated collection"
+  Grid: 4 columns mobile, 4 columns desktop, gap-3
+  8 photos: COUPLE_1 through COUPLE_8
+  Each photo card: aspect-square, rounded-xl, overflow-hidden, cursor-pointer
+  Selected state: border-2 #B76E79, rose gold overlay opacity-30, ✓ white checkmark center
+  Unselected hover: border-1 rgba(255,255,255,0.3)
+
+Navigation:
+  "Next: Wedding Events →" button, rose gold gradient, full width, py-3, rounded-xl
+
+--- STEP 2 — WEDDING EVENTS 📅 ---
+
+Supports 1–4 events. Pre-filled with 3 defaults.
+
+Each event: collapsible accordion card
+  Header (always visible): 
+    Event name + date badge + expand/collapse chevron (↓/↑)
+    Style: dark glass card, rounded-xl, px-4 py-3, cursor-pointer
+
+  Expanded content fields:
+    Event Name*   : text, placeholder "e.g. Wedding Ceremony"
+    Date*         : date input, min=today, required
+    Time*         : time input, required (display in 12hr format)
+    Venue Name*   : text, placeholder "e.g. The Grand Palace Banquet"
+    Venue Address*: textarea 2 rows, placeholder "123, MG Road..."
+    Maps Link     : url input, optional, placeholder "https://maps.google.com/..."
+    Dress Code    : text, optional, placeholder "Traditional | Saree / Sherwani"
+
+Default 3 events pre-filled:
+  Event 1: "Mehendi Ceremony"
+  Event 2: "Sangeet Night"
+  Event 3: "Wedding & Reception"
+
+"+ Add Another Event" button: dashed border, rose gold outline, full width
+"− Remove Event" link: small, red text, top-right of each card (hidden for 1st)
+
+Navigation: "← Back" outline button | "Next: Gallery →" rose gold button
+
+--- STEP 3 — PHOTO GALLERY 📸 ---
+
+Two tabs: [Couple Photos] [Venue & Decor]
+  Tab style: pill toggle, active = rose gold bg, inactive = transparent border
+
+COUPLE PHOTOS tab — 8 selectable photos:
+  COUPLE_1_HERO, COUPLE_2_PORTRAIT, COUPLE_3_CANDID, COUPLE_4_OUTDOOR,
+  COUPLE_5_ROMANTIC, COUPLE_6_TRADITIONAL, COUPLE_7_CLOSEUP, COUPLE_8_EVENING
+
+VENUE & DECOR tab — 8 selectable photos:
+  VENUE_1_GRAND_HALL, VENUE_2_OUTDOOR_MANDAP, VENUE_3_RECEPTION,
+  VENUE_4_FLOWERS, VENUE_5_LIGHTS, DECOR_1_RINGS, DECOR_2_FLOWERS,
+  DECOR_3_MEHENDI, DECOR_4_CANDLES, DECOR_5_TABLE
+
+Photo Grid:
+  Mobile  : 4 columns, gap-2
+  Tablet  : 4 columns, gap-3
+  Desktop : 4 columns, gap-3
+  Each: aspect-square next/image object-cover rounded-xl cursor-pointer
+
+Selection states:
+  Selected    : border-2 #B76E79, rgba(183,110,121,0.3) overlay, ✓ white 28px center
+  Unselected  : hover border-1 rgba(255,255,255,0.25)
+  Limit full  : unselected photos get opacity-40, cursor-not-allowed
+
+Limit: 8 photos max total across both tabs
+Counter: "5 / 8 photos selected" — DM Sans 13px, rose gold, text-center
+
+Selected photos preview row:
+  Horizontal row of 48px thumbnails, draggable order (click-swap)
+  Each: rounded-lg, rose gold border, × remove button overlay on hover
+
+Navigation: "← Back" | "Next: Design →"
+
+--- STEP 4 — DESIGN & MUSIC 🎨 ---
+
+COLOR THEME SELECTOR:
+  Label: "Choose Your Color Theme" — DM Sans 14px, white/70
+  Layout: flex-wrap, gap-4
+  6 swatches (52px circles):
+    - Rose Gold: gradient #B76E79 → #D4A574
+    - Royal Blue: #1B3A6B with #C9A84C dot
+    - Emerald: #2D5A27 with #D4AF37 dot
+    - Midnight: #1A1A2E with #C9A84C dot
+    - Blush: #E8739A with #F4C2D0 dot
+    - Saffron: #FF6B35 with #FFD700 dot
+  Selected: 3px white ring + 3px outer theme-color ring, scale(1.18)
+  Label below swatch: DM Sans 11px white/60
+  On click: preview panel cross-fades to new theme in 0.4s
+
+TEMPLATE SELECTOR:
+  Label: "Choose Your Template Style"
+  Grid: 2 columns on mobile/tablet, 3 columns on desktop, gap-3
+  6 mini cards (140px tall):
+    - next/image thumbnail (cropped to card)
+    - Template name DM Sans 13px below
+    - Selected: rose gold border-2, ✓ checkmark overlay
+  Clicking updates preview panel instantly
+
+MUSIC TOGGLE:
+  Label: "Add Background Music 🎵"
+  Toggle: large pill switch, 56px wide, rose gold when ON, gray when OFF
+  When ON: dropdown appears (Framer Motion, y: -10 → 0)
+  Dropdown style: dark glass, rounded-xl
+  8 track options:
+    1. Tum Hi Ho — Aashiqui 2
+    2. Kal Ho Na Ho — K3G
+    3. Pehla Nasha — Jo Jeeta
+    4. Kesariya — Brahmastra
+    5. Raataan Lambiyan — Shershaah
+    6. Ve Maahi — Kesari
+    7. Tu Hi Re — Bombay
+    8. Mere Yaar Ki Shaadi — MYKS
+
+Navigation: "← Back" | "Next: Publish →"
+
+--- STEP 5 — PUBLISH 🎊 ---
+
+URL Preview Card:
+  Label: "Your Invitation Link"
+  Display: "shaadipage.in/wedding/[auto-generated]"
+  Editable input for slug (Fira Code font, dark glass style)
+  "Check Availability" button → "✓ Available!" green OR "✗ Taken, try another" red
+  Auto-generated from: bride name + "weds" + groom name + month + year
+  Example: "rahul-weds-priya-oct2025"
+
+Plan Selector (3 radio cards, mobile: stacked, desktop: 3-col):
+  Each: click to select, selected = rose gold border + faint rose bg
+  Shows plan name, price, top 3 features
+
+Summary Review Card:
+  All entered data in readable format:
+  Bride: [name] | Groom: [name] | Events: [count] | Photos: [count]
+  Theme: [name] | Template: [name] | Music: On/Off
+
+PUBLISH BUTTON:
+  "Publish My Invitation 🎊"
+  Style: rose gold gradient, full width, rounded-2xl, py-4, text-xl,
+         shadow: 0 8px 40px rgba(183,110,121,0.5)
+         hover: brightness(1.08) scale(1.02)
+         active: scale(0.98)
+
+  On click flow:
+    Step 1: Button shows spinner + "Creating your invitation..." (1.5s)
+    Step 2: canvas-confetti burst (pink, gold, white, red — 3 bursts, 3s total)
+    Step 3: SUCCESS MODAL slides up (Framer Motion, y: 100% → 0, spring)
+
+SUCCESS MODAL:
+  Layout: fixed overlay + centered card, max-w-md, rose gold gradient bg, rounded-3xl p-8
+  - Animated checkmark circle (SVG stroke-dasharray animation, 0.8s)
+  - "Your Invitation is Live! 🎊" — Great Vibes 44px white
+  - Link box: dark glass, Fira Code font, copy on click
+  - 3 action buttons stacked (mobile) / row (desktop):
+    * "📋 Copy Link" — glass white button
+    * "💬 Share on WhatsApp" — green #25D366, WhatsApp icon
+    * "👁 View Invitation" — outline white, opens /wedding/[slug] new tab
+
+--- PREVIEW PANEL ---
+
+Desktop:
+  Background: dark #111 with subtle grid pattern
+  Label bar: "Live Preview" DM Sans 13px gray-400
+  Device toggle: [📱 Phone] [📟 Tablet] [💻 Desktop] — pill buttons
+  "Open Full Preview ↗" link top-right (opens new tab)
+
+  Phone mode: 320px CSS phone frame, zoom: 0.65
+  Tablet mode: 580px CSS tablet frame, zoom: 0.55
+  Desktop mode: full panel width, zoom: 0.7
+
+  Frame styles: dark border-radius matching device, shadow-2xl
+  Content: actual invitation template rendered inside, all form data live
+
+Live Update Behavior:
+  Any form field change → zustand state update → preview re-renders
+  Changed elements: brief scale pulse (1 → 1.025 → 1, 0.3s)
+  Theme change: 0.4s color transition across all elements
+  Photo selection: image cross-fades in (0.3s)
+
+Mobile (Preview Tab):
+  Full-screen width, height calc(100dvh - 56px - 48px) (minus top bar + tabs)
+  Scrollable
+  "✏️ Back to Edit" button fixed bottom-center
+
+================================================================================
+  9. INVITATION PAGE — app/wedding/[slug]/page.tsx
+================================================================================
+
+This page is what GUESTS see. PRIMARY FOCUS — must be flawless on mobile.
+80% of Indian wedding guests will open this on a mobile phone via WhatsApp.
+
+DEMO DATA (used for /wedding/demo route):
+
+  brideName    : "Priya"
+  groomName    : "Rahul"
+  brideFamily  : "D/O Mr. & Mrs. Sharma"
+  groomFamily  : "S/O Mr. & Mrs. Verma"
+  couplePhoto  : COUPLE_1_HERO
+  loveStory    : "We met at a college fest in 2019 and knew instantly.
+                  After 5 years of laughter, adventures, and love, we are
+                  finally making it official. Thank you for being part of
+                  our journey."
+  hashtag      : "#RahulWedsPriya"
+  customMessage: "With the blessings of our families, we joyfully invite
+                  you to celebrate our wedding. Your presence will make
+                  our day complete."
+  gallery      : [COUPLE_2_PORTRAIT, COUPLE_3_CANDID, COUPLE_4_OUTDOOR,
+                  VENUE_1_GRAND_HALL, DECOR_1_RINGS, COUPLE_5_ROMANTIC,
+                  VENUE_2_OUTDOOR_MANDAP, DECOR_2_FLOWERS]
+  events       : [
+    { name: "Mehendi Ceremony",  date: "2025-10-10", time: "4:00 PM",
+      venue: "Sharma Residence", address: "42, Linking Road, Bandra, Mumbai 400050",
+      mapsLink: "https://maps.google.com", dressCode: "Colourful Traditional" },
+    { name: "Sangeet Night",     date: "2025-10-11", time: "7:00 PM",
+      venue: "The Grand Ballroom", address: "Hotel Taj Lands End, Bandra, Mumbai",
+      mapsLink: "https://maps.google.com", dressCode: "Ethnic Wear | Lehenga/Sherwani" },
+    { name: "Wedding Ceremony",  date: "2025-10-12", time: "10:30 AM",
+      venue: "ISKCON Temple Hall", address: "Hare Krishna Land, Juhu, Mumbai 400049",
+      mapsLink: "https://maps.google.com", dressCode: "Traditional | Saree / Dhoti" },
+    { name: "Reception",         date: "2025-10-12", time: "7:30 PM",
+      venue: "The Grand Palace Banquet", address: "JW Marriott Hotel, Juhu, Mumbai",
+      mapsLink: "https://maps.google.com", dressCode: "Formal / Indo-Western" }
+  ]
+  template     : 1
+  colorTheme   : "rose-gold"
+  musicEnabled : false
+  rsvpEnabled  : true
+  rsvpDeadline : "2025-10-01"
+
+PAGE LOAD SEQUENCE:
+  1. Page fades in (opacity 0 → 1, 0.5s)
+  2. canvas-confetti burst fires (3 bursts, 3.5s total):
+     - Burst 1 (0.0s): center top, 120 particles, pink/gold/white/red
+     - Burst 2 (0.8s): left edge, 60 particles, rose gold colors
+     - Burst 3 (1.6s): right edge, 60 particles, same colors
+  3. Hero section elements stagger in (Framer Motion, 0.12s per child)
+
+SCROLL PROGRESS BAR:
+  Position: fixed top-0 left-0, height 3px, z-index 9999
+  Background: linear-gradient(90deg, #B76E79, #D4A574)
+  Width: tracks scrollY / (documentHeight - windowHeight) * 100%
+  JS: window addEventListener('scroll', updateProgress)
+
+--- SECTION A — COVER HERO ---
+
+HEIGHT:
+  Mobile  : 100dvh
+  Tablet  : 100vh
+  Desktop : 100vh
+
+BACKGROUND LAYERS:
+  Layer 1: next/image COUPLE_1_HERO, object-cover object-center, absolute inset-0
+  Layer 2: gradient overlay:
+    linear-gradient(to bottom,
+      rgba(44,24,16,0.50) 0%,
+      rgba(183,110,121,0.22) 40%,
+      rgba(44,24,16,0.88) 100%)
+  Layer 3: Animated mandala SVG — large circle, lotus pattern, absolute center,
+            width 600px mobile / 900px desktop, opacity 0.07,
+            animation: spin 80s linear infinite
+  Layer 4: Floating petals (24 divs, same as landing page)
+
+DECORATIVE BORDERS:
+  Top ornament: SVG floral strip, full width, height 70px–90px, rose gold, opacity 0.65
+  Bottom ornament: same SVG flipped vertically
+
+CONTENT (vertically centered, max-w-xl mx-auto, px-6):
+  All Framer Motion stagger, children y:30→0 opacity:0→1, delay: index * 0.12s
+
+  1. "With the blessings of"
+     DM Sans 12px–13px, letter-spacing 0.35em uppercase, white/65
+
+  2. Family names: "Mr. & Mrs. Sharma  ·  Mr. & Mrs. Verma"
+     Cormorant Garamond 16px–18px, white/75, italic
+
+  3. Decorative: "✦ ————————— ✦"
+     Color: #D4A574, text-center, font-size 18px
+
+  4. BRIDE NAME: brideName value
+     Font: Great Vibes, size: clamp(72px, 14vw, 140px)
+     Color: #D4A574
+     Text-shadow: 0 2px 20px rgba(183,110,121,0.5)
+     Framer Motion: each letter individually animated
+     (split name into array, each letter: y:40→0, spring, stagger 0.04s)
+
+  5. "&"
+     Cormorant Garamond italic, clamp(44px,8vw,64px), white/55
+
+  6. GROOM NAME: groomName value
+     Same as bride name style
+
+  7. "are getting married"
+     DM Sans 14px–16px, white/70, letter-spacing 0.2em uppercase
+
+  8. Date pill: "Saturday · 12th October 2025"
+     Glass pill: backdrop-blur-md, bg rgba(255,255,255,0.1),
+     border 1px rgba(255,255,255,0.2), rounded-full, px-6 py-2
+     Cormorant Garamond 20px–22px, white
+
+COUPLE PHOTO:
+  Position: below names, centered (mobile) / absolute right-10 center-y (desktop)
+
+  Size:
+    Mobile  : 160px diameter
+    Tablet  : 200px diameter
+    Desktop : 240px diameter
+
+  Layers (relative container, centered):
+    1. Outer dashed ring: calc(diameter + 80px), border-2 dashed #D4A574, opacity 0.4,
+       animation: spin 40s linear infinite (very slow)
+    2. Middle: calc(diameter + 40px) circle, bg rgba(183,110,121,0.15)
+    3. Photo: next/image, width=diameter, aspect-square, rounded-full,
+       object-cover object-top, border-4 solid #D4A574
+    4. Inner glow: box-shadow inset 0 0 24px rgba(183,110,121,0.35)
+  Framer Motion: scale 0 → 1, spring physics, delay 0.9s
+
+Custom message card (if customMessage exists):
+  Style: max-w-sm mx-auto, glass card backdrop-blur-md bg rgba(255,255,255,0.08),
+         border rgba(255,255,255,0.15), rounded-2xl, p-5
+  Text: Cormorant Garamond italic 18px–20px, white/80, text-center
+
+Scroll indicator:
+  DM Sans 11px–12px, white/45 + bouncing ↓ chevron
+
+--- SECTION B — COUNTDOWN TIMER ---
+
+Background: #2C1810
+Top ornament: floral SVG border, rose gold opacity 0.4
+Bottom ornament: same flipped
+
+Content (centered, py-16–py-20):
+  Heading: "The Big Day Is Almost Here"
+    Great Vibes clamp(40px,7vw,56px), color #D4A574, text-center
+  Date subtitle: Cormorant Garamond 16px–18px, white/60, text-center, mb-10
+
+COUNTDOWN GRID:
+  Mobile  : 2x2 grid, gap-4
+  Tablet  : 4-column row, gap-4
+  Desktop : 4-column row, gap-6, max-w-3xl mx-auto
+
+Each countdown box:
+  Style: backdrop-blur-lg, bg rgba(255,255,255,0.06),
+         border 1px rgba(255,255,255,0.12), rounded-2xl,
+         p-6 mobile / p-8 desktop,
+         shadow: 0 8px 32px rgba(0,0,0,0.3),
+         border-top: 2px solid rgba(212,165,116,0.4)
+
+  Number: Cormorant Garamond clamp(48px,10vw,80px), color #D4A574, text-center
+  Label: DM Sans 11px–12px, letter-spacing-widest uppercase, white/45, text-center
+
+Logic (JavaScript):
+  setInterval every 1000ms:
+    diff = differenceInSeconds(weddingDate, now)
+    days = Math.floor(diff / 86400)
+    hours = Math.floor((diff % 86400) / 3600)
+    minutes = Math.floor((diff % 3600) / 60)
+    seconds = diff % 60
+
+When diff <= 0:
+  Show: "Today Is The Day! 🎊"
+  Great Vibes 52px, #D4A574, text-center
+  Trigger confetti burst
+
+--- SECTION C — WEDDING EVENTS ---
+
+Background: #FDF6F0
+Background pattern: radial-gradient(circle, rgba(183,110,121,0.15) 1px, transparent 1px)
+                    background-size: 24px 24px
+
+Section heading (text-center):
+  "Join Us For" — Great Vibes clamp(44px,7vw,60px), #B76E79
+  "Our Celebrations" — Cormorant Garamond clamp(22px,3.5vw,32px), #2C1810
+  Lotus SVG divider (centered, 48px wide, rose gold)
+
+Events (vertical stack, gap-6, max-w-2xl mx-auto, px-4):
+  Framer Motion useInView: each card alternates slide direction
+    Even index: initial { x: -50, opacity: 0 }
+    Odd index:  initial { x: 50, opacity: 0 }
+    Both animate to: { x: 0, opacity: 1 }, spring, delay: index * 0.15s
+
+Each Event Card:
+  Style: bg white, rounded-3xl, shadow-lg, p-6 md:p-8,
+         border-l-4 solid #B76E79
+
+  Row 1: Event number circle (40px, bg #B76E79, white Cormorant 20px) +
+          Event name (Cormorant Garamond 26px–32px bold, #2C1810) +
+          Time badge (bg #B76E79, white DM Sans 13px, rounded-full, px-3 py-1)
+
+  Row 2: 📅 icon + date string (DM Sans 15px–16px, gray-600)
+          Example: "Friday, 10th October 2025"
+
+  Row 3: 📍 icon + venue name (DM Sans 15px bold, dark) + address (14px gray below)
+
+  Row 4 (if dressCode): 👗 icon + dress code text (DM Sans 14px, #B76E79 italic)
+
+  Row 5 (if mapsLink): "Get Directions →" button
+    Style: border 1px #B76E79, color #B76E79, rounded-full, px-5 py-2,
+           DM Sans 14px, hover: bg #B76E79 text-white
+    onClick: window.open(mapsLink, '_blank')
+
+Between events: small lotus SVG separator (32px, rose gold, centered, my-4)
+
+--- SECTION D — LOVE STORY (only if loveStory exists) ---
+
+Background: linear-gradient(135deg, #2C1810 0%, #4A2030 100%)
+Pattern: small diamond SVG pattern, gold, opacity 0.04
+
+Content (max-w-2xl mx-auto, px-6, py-16–py-20, text-center):
+  Large decorative quote: " (opening)
+    Great Vibes 180px, #D4A574, opacity 0.08,
+    position absolute top-4 left-8
+
+  "Our Story"
+    Great Vibes clamp(48px,8vw,68px), #D4A574, text-center
+
+  Story paragraphs (split by \n\n):
+    Cormorant Garamond italic 20px–22px, rgba(255,255,255,0.82),
+    text-center, line-height 1.9, max-w-xl mx-auto
+    Between paragraphs: small rose SVG ornament, 24px, rose gold, centered
+
+  Hashtag: "#RahulWedsPriya"
+    DM Sans 15px–16px, #D4A574, text-center, mt-8
+    cursor-pointer, onClick: window.open Instagram search URL
+
+--- SECTION E — PHOTO GALLERY ---
+
+Background: #FDF6F0, py-16
+
+Heading (text-center):
+  "Captured Moments" — Great Vibes clamp(44px,7vw,60px), #B76E79
+  "A glimpse of our journey together" — Cormorant Garamond 20px–24px italic, gray
+
+GALLERY GRID:
+  Mobile  : CSS columns: 2, column-gap: 10px
+  Tablet  : CSS columns: 3, column-gap: 12px
+  Desktop : CSS columns: 3, column-gap: 16px
+  (break-inside: avoid on each photo)
+
+Each photo:
+  display: block, width: 100%, height: auto (natural ratio), margin-bottom: 10px–16px
+  border-radius: 16px–20px, overflow: hidden
+  Framer Motion useInView:
+    initial { opacity: 0, scale: 0.9 }
+    animate { opacity: 1, scale: 1 }
+    transition: duration 0.5s, delay: index * 0.08s
+  Hover (desktop): scale(1.03), brightness(1.08), border-2 #B76E79
+
+LIGHTBOX:
+  Trigger: click any gallery photo
+  Overlay: fixed inset-0, bg rgba(0,0,0,0.93), backdrop-blur-lg, z-50
+  Framer Motion: opacity 0 → 1 on open, 0 on close
+
+  Content:
+    Center: next/image, max-h-[85dvh] max-w-[92vw], object-contain, rounded-2xl
+    Photo counter: "3 / 8" fixed top-4 right-16, DM Sans 14px, white/70
+    Close button: fixed top-4 right-4, 48px circle, bg rgba(255,255,255,0.12),
+                  × icon, hover bg-rose-500
+    Prev ← button: fixed left-3 center-y, 48px circle glass, white arrow
+    Next → button: fixed right-3 center-y, 48px circle glass, white arrow
+
+  Mobile swipe:
+    Track touchstart/touchend X positions
+    Swipe left (diff > 50px) → next photo
+    Swipe right (diff < -50px) → prev photo
+
+  Keyboard (desktop):
+    ArrowLeft → prev, ArrowRight → next, Escape → close
+
+  Photo transition: Framer Motion AnimatePresence, cross-fade 0.25s
+
+--- SECTION F — RSVP (only if rsvpEnabled) ---
+
+Background: linear-gradient(135deg, #B76E79 0%, #8B4A56 100%)
+Top ornament: white SVG floral, opacity 0.25
+
+Heading (text-center):
+  "Will You Join Us?" — Great Vibes clamp(48px,8vw,68px), white
+  Deadline (if set): "Please RSVP by 1st October 2025" — DM Sans 15px, white/70
+
+RSVP FORM CARD:
+  Style: max-w-md mx-auto, bg rgba(255,255,255,0.13), backdrop-blur-xl,
+         rounded-3xl, p-7 md:p-10, border 1px rgba(255,255,255,0.22)
+
+  Layout: all fields full-width, stacked
+
+  Field 1 — Name:
+    Label: "Your Name *"
+    Input: glass dark style, white text, rose gold focus ring
+
+  Field 2 — Guest Count:
+    Label: "Number of Guests"
+    4 pill radio buttons: [👤 Just Me] [👥 2 People] [👨‍👩‍👦 3 People] [👨‍👩‍👧‍👦 4+]
+    Style: flex-wrap, gap-3
+    Active: white bg, #B76E79 text, font-semibold, border-white
+    Inactive: transparent, white/60, border white/25
+
+  Field 3 — Message (optional):
+    Label: "Message to the Couple 💌 (optional)"
+    Textarea 3 rows, placeholder "Share your wishes..."
+
+  Submit: "RSVP Now ❤️"
+    Style: white bg, #B76E79 text, full width, rounded-xl, py-3 md:py-4,
+           DM Sans 17px font-semibold
+           hover: bg #B76E79 text-white
+    Framer Motion: whileHover scale(1.02), whileTap scale(0.97)
+
+  On submit (client-side only):
+    Loading: spinner replaces button text (1.2s)
+    Success state: replaces entire form
+      - Animated heart (CSS pulse scale keyframe)
+      - "Thank you, [Name]! 🎊" — Great Vibes 40px white
+      - "We can't wait to celebrate with you!" — DM Sans 17px white/80
+      - Small confetti burst (white + rose colors only)
+
+  Validation (react-hook-form + zod):
+    Name: required, min 2 chars, max 50 chars
+    GuestCount: required, must be selected
+    Error messages: DM Sans 13px red/light below field
+    Form shake on invalid submit: Framer Motion x: 0 → 6 → -6 → 0 (0.4s)
+
+--- SECTION G — SHARE & CONTACT ---
+
+Background: white / #FAFAF8, py-16
+
+LAYOUT:
+  Mobile  : Stacked (share section on top, contact below)
+  Tablet  : 2-column grid, gap-8
+  Desktop : 2-column grid, gap-12, max-w-5xl mx-auto
+
+LEFT — "Share the Joy":
+  Heading: Cormorant Garamond 36px–40px, dark
+
+  WhatsApp button (PRIMARY — most important):
+    Style: bg #25D366, white text, DM Sans 16px font-semibold,
+           WhatsApp SVG icon (24px) left, rounded-full, px-8 py-4,
+           shadow: 0 8px 24px rgba(37,211,102,0.4)
+           hover: brightness(1.08) shadow stronger
+           width: full-width mobile, auto desktop
+    onClick:
+      text = "💌 Rahul & Priya are getting married! 🎊\n\n" +
+             "Join us for the celebrations on 12th October 2025.\n\n" +
+             "View their digital invitation:\n[current URL]\n\n" +
+             "#RahulWedsPriya"
+      url = "https://wa.me/?text=" + encodeURIComponent(text)
+      window.open(url, '_blank')
+
+  Copy Link button:
+    Style: border 1px gray-300, gray text, DM Sans 15px,
+           rounded-full, px-6 py-3, copy icon SVG
+    State change: text → "✓ Copied!" green for 2s
+    onClick: navigator.clipboard.writeText(window.location.href)
+
+  Download Card button (Premium feature):
+    Style: border 1px #B76E79, #B76E79 text, rounded-full, px-6 py-3
+    If free plan: button shown but disabled, tooltip "Available in Premium"
+
+RIGHT — "Get in Touch":
+  Heading: Cormorant Garamond 36px–40px, dark
+
+  Bride's Side card:
+    Style: bg white, border 1px gray-100, rounded-2xl, p-5, shadow-sm
+    Content: "👰 Bride's Side" label + family name + phone number
+             [Call 📞] [WhatsApp 💬] pill link buttons
+
+  Groom's Side card: (same style)
+    Content: "🤵 Groom's Side" label + family name + phone number
+
+--- SECTION H — CLOSING ---
+
+HEIGHT:
+  Mobile  : 100dvh
+  Tablet  : 80vh
+  Desktop : 100vh
+
+Background: #2C1810
+Background pattern: subtle gold diamond pattern, opacity 0.04
+Floating petals: 10 petals, same as hero but slower drift,
+                 triggered by useInView (only animate when scrolled into view)
+
+Content (vertically centered, text-center, px-6):
+  Framer Motion: staggered fade-up on scroll into view
+
+  1. Monogram: "[Bride Initial] ♡ [Groom Initial]"
+     Great Vibes clamp(80px,15vw,140px), #D4A574
+     text-shadow: 0 4px 40px rgba(212,165,116,0.45)
+
+  2. Wedding date: Cormorant Garamond 22px–26px, white/65
+
+  3. Custom message (if exists):
+     Cormorant Garamond italic 18px–20px, white/78, max-w-lg mx-auto, line-height 1.8
+     Large decorative quotes: " " in rose gold, opacity 0.35, 80px
+
+  4. Hashtag: "#RahulWedsPriya"
+     DM Sans 16px–18px, #D4A574, letter-spacing 0.15em, cursor-pointer
+     onClick: opens Instagram
+
+  5. "We look forward to your presence and blessings 🙏"
+     DM Sans 15px–16px, white/55
+
+  6. Divider: thin rose gold line, 80px wide, mx-auto, my-6
+
+  7. "Made with ShaadiPage ❤️"
+     DM Sans 12px, white/25 (hidden for Premium plan)
+
+On scroll into view: second confetti burst fires (canvas-confetti, rose + gold)
+
+================================================================================
+  10. TEMPLATE SPECIFICATIONS — ALL 6 TEMPLATES
+================================================================================
+
+All templates use identical section structure as Template 1.
+Differences are: colors, ornaments, fonts sizes, pattern overlays, photo frames.
+
+--- TEMPLATE 1: ROSE GARDEN (fully implemented above) ---
+Theme: rose-gold | Primary: #B76E79 | Accent: #D4A574 | Dark: #2C1810
+Ornaments: lotus + floral vine SVG borders
+Photo frame: circular, dashed outer ring, rose gold border
+Countdown: dark rose bg (#2C1810), gold numbers
+Events: white card, rose gold left border
+Gallery: rounded-2xl, rose gold hover border
+
+--- TEMPLATE 2: ROYAL INDIGO ---
+Theme: royal-blue | Primary: #1B3A6B | Accent: #C9A84C | Dark: #0D1B33
+Ornaments: Mughal arch / geometric Islamic pattern SVG dividers
+Photo frame: octagonal clip-path, gold border (CSS polygon clip-path)
+Countdown: navy bg (#1B3A6B), gold numbers
+Events: navy card (#1B3A6B), gold left border, gold time badges
+Gallery: dark navy frame, gold corner accent SVG overlay on each photo
+Pattern: geometric stars opacity 0.05 overlay on sections
+Names: Great Vibes in #C9A84C (gold)
+Overall feel: North Indian royal wedding, Rajasthan/Lucknow aesthetic
+
+--- TEMPLATE 3: EMERALD TRADITION ---
+Theme: emerald | Primary: #2D5A27 | Accent: #D4AF37 | Dark: #1A3A15
+Ornaments: Kolam dot-grid pattern (CSS radial-gradient), mango/kalash SVG motifs
+Photo frame: circular, gold border, small mango motif decorations at 4 corners
+Countdown: cream bg (#F0F8F0), green numbers, gold border boxes
+Events: cream cards, thick green left border, gold time badges
+Gallery: rounded-xl, green hover border
+Pattern: subtle kolam dots (radial-gradient) on all section backgrounds
+Language: Tamil/Telugu text rendered if language preference set
+Names: Great Vibes in #2D5A27 (deep green)
+Overall feel: South Indian traditional — Tamil/Telugu/Kannada wedding
+
+--- TEMPLATE 4: MIDNIGHT GLAMOUR ---
+Theme: midnight | Primary: #1A1A2E | Accent: #C9A84C | Dark: #080812
+Ornaments: thin gold geometric lines (SVG), constellation dot pattern
+NO heavy florals — editorial, minimal
+Photo frame: circular, 3px gold border, subtle gold glow (box-shadow)
+Countdown: near-black bg (#0F0F1E), large gold numbers, thin gold box border
+Events: dark cards (#1A1A2E bg), thin gold all-around border, gold left accent
+Gallery: dark frame around each photo (#1A1A2E border-4), rounded-xl
+Pattern: small white dots (CSS radial-gradient) constellation effect, opacity 0.04
+Names: Great Vibes in #C9A84C, extra large (clamp(80px,15vw,160px) on desktop)
+Overall feel: modern luxury, dark wedding aesthetic, urban Indian couples
+
+--- TEMPLATE 5: BLUSH ROMANCE ---
+Theme: blush-pink | Primary: #E8739A | Accent: #F4C2D0 | Dark: #5C1A35
+Ornaments: botanical rose/leaf line drawings (SVG, hand-drawn style), simple + airy
+Photo frame: circular, blush border (#F4C2D0), no rings — clean and soft
+Countdown: white bg, pink numbers, blush border boxes
+Events: white cards, blush left border (4px), pink time badges
+Gallery: rounded-3xl, pink hover border, very soft shadows
+Pattern: large soft watercolor splashes (CSS radial-gradient, blush colors, very low opacity)
+Names: Great Vibes in #E8739A (rose pink)
+Overall feel: modern romantic, spring/summer wedding, light and airy
+
+--- TEMPLATE 6: SAFFRON FESTIVAL ---
+Theme: saffron | Primary: #FF6B35 | Accent: #FFD700 | Dark: #8B1A00
+Ornaments: geometric triangle/chevron pattern (CSS clip-path), diya/lamp SVG motifs
+Bold geometric dividers (thick colored bars)
+Photo frame: square (rounded-2xl NOT circular), saffron border-4, gold corner accents
+Countdown: saffron bg (#FF6B35), dark numbers (#8B1A00), gold borders
+Events: white cards with bold saffron TOP border (6px), gold time badges
+Gallery: aspect-square forced crops, saffron hover border, high energy grid
+Pattern: bold triangle tessellation, saffron opacity 0.06
+Names: Great Vibes in #FF6B35 (saffron), bold and large
+Overall feel: vibrant festive celebration, large family North Indian wedding,
+              Diwali-adjacent energy, high contrast
+
+================================================================================
+  11. RSVP DASHBOARD — app/dashboard/[slug]/page.tsx
+================================================================================
+
+Access: couple-only, via magic link sent to email (no password auth)
+
+Layout:
+  Mobile  : Stacked cards (stats on top, table below)
+  Tablet  : Stats row + scrollable table
+  Desktop : Sidebar nav + main content area
+
+STATS ROW (4 cards):
+  Total RSVPs  | Confirmed (Yes) | Declined | Pending (no response)
+  Each: glass card, large number (Cormorant 48px), label DM Sans 13px
+
+GUEST TABLE:
+  Columns: # | Name | Guests | Meal Pref | Message | Date Submitted
+  Mobile  : Scrollable horizontal, condensed (Name + Count only visible)
+  Desktop : Full table, all columns
+  Sortable: by name, date, guest count
+  Row hover: rose gold bg subtle
+
+ACTIONS:
+  "Export CSV" button — downloads guest list
+  "Edit Invitation" button — returns to builder with data pre-filled
+  "Share Invitation" button — opens share modal
+
+INVITATION STATS (below table):
+  Total Views | Unique Visitors | WhatsApp Shares (tracked via UTM)
+  Simple number cards, DM Sans
+
+================================================================================
+  12. API ROUTES
+================================================================================
+
+POST /api/weddings/create
+  Input: full wedding form data (validated with zod)
+  Process: generate unique slug (nanoid 8 chars), save to MongoDB
+  Output: { success, slug, previewUrl }
+
+GET /api/weddings/[slug]
+  Input: slug URL param
+  Process: fetch from MongoDB by slug, increment views counter
+  Output: full wedding object OR 404
+
+POST /api/rsvp/[slug]
+  Input: { guestName, guestCount, mealPreference, message }
+  Process: validate, save RSVP to MongoDB
+  Output: { success, message }
+
+GET /api/rsvp/[slug]
+  Input: slug + auth token header
+  Process: verify couple auth, fetch all RSVPs for slug
+  Output: array of RSVP objects
+
+POST /api/check-slug
+  Input: { slug }
+  Process: check MongoDB for existing slug
+  Output: { available: boolean, suggestion: string }
+
+================================================================================
+  13. MONGODB SCHEMAS
+================================================================================
+
+WEDDING SCHEMA:
+  slug          : String, unique, indexed, required
+  plan          : Enum ['free', 'premium', 'premium_plus'], default 'free'
+
+  couple:
+    brideName     : String, required
+    groomName     : String, required
+    brideFamily   : String
+    groomFamily   : String
+    loveStory     : String, maxLength 1000
+    couplePhoto   : String (URL from photo selector)
+    hashtag       : String
+    customMessage : String, maxLength 300
+    language      : Enum ['en','hi','ta','te','kn','ml'], default 'en'
+
+  events: [{
+    name          : String, required
+    date          : Date, required
+    time          : String, required
+    venueName     : String, required
+    venueAddress  : String, required
+    mapsLink      : String
+    dressCode     : String
+  }]
+
+  gallery       : [String] (array of photo URLs, max 8)
+
+  design:
+    template      : Number (1–6), default 1
+    colorTheme    : Enum ['rose-gold','royal-blue','emerald','midnight','blush','saffron']
+    musicTrack    : String (track name or null)
+    musicEnabled  : Boolean, default false
+
+  rsvp:
+    enabled       : Boolean, default false
+    deadline      : Date
+    contactPhone  : String
+
+  meta:
+    createdAt     : Date, default Date.now
+    expiresAt     : Date (30 days free, 1 year premium, null for lifetime)
+    views         : Number, default 0
+    coupleEmail   : String
+    isPublished   : Boolean, default false
+
+RSVP SCHEMA:
+  weddingSlug     : String, required, indexed
+  guestName       : String, required
+  guestCount      : Number (1–4), required
+  mealPreference  : Enum ['veg', 'non-veg'], optional
+  message         : String, maxLength 300
+  submittedAt     : Date, default Date.now
+
+================================================================================
+  14. ZUSTAND STORE — store/useBuilderStore.ts
+================================================================================
+
+interface WeddingFormData {
+  brideName: string
+  groomName: string
+  brideFamily: string
+  groomFamily: string
+  loveStory: string
+  couplePhoto: string
+  hashtag: string
+  customMessage: string
+  language: 'en' | 'hi' | 'ta' | 'te' | 'kn' | 'ml'
+  events: EventData[]
+  gallery: string[]
+  template: 1 | 2 | 3 | 4 | 5 | 6
+  colorTheme: ThemeName
+  musicEnabled: boolean
+  musicTrack: string | null
+  rsvpEnabled: boolean
+  rsvpDeadline: string
+  slug: string
+}
+
+interface BuilderStore extends WeddingFormData {
+  currentStep: 1 | 2 | 3 | 4 | 5
+  isPublishing: boolean
+  isPublished: boolean
+  publishedUrl: string | null
+
+  // Actions
+  setField: (key: keyof WeddingFormData, value: any) => void
+  setStep: (step: number) => void
+  addEvent: () => void
+  removeEvent: (index: number) => void
+  updateEvent: (index: number, field: string, value: any) => void
+  togglePhoto: (url: string) => void
+  reorderPhotos: (from: number, to: number) => void
+  setTheme: (theme: ThemeName) => void
+  setTemplate: (template: number) => void
+  publish: () => Promise<void>
+  reset: () => void
+}
+
+================================================================================
+  15. ANIMATION SPECIFICATIONS
+================================================================================
+
+LANDING PAGE:
+  Hero text words: Framer Motion staggerContainer, staggerChildren 0.12s
+                   each child: y:30→0 opacity:0→1, spring (stiffness:100, damping:20)
+  Feature cards: useInView, stagger 0.08s, y:30→0 opacity:0→1
+  Template cards: hover scale(1.03) shadow-2xl (CSS transition 0.3s)
+  How It Works steps: connecting line SVG stroke-dashoffset 0→100 on scroll
+  Stats bar numbers: count-up animation (0 → target, 2s, easeOut)
+  Testimonial cards: horizontal scroll reveal on mobile (snap scroll)
+
+BUILDER PAGE:
+  Step transitions: Framer Motion AnimatePresence
+                    Exit: x:0→-60 opacity:1→0, duration 0.25s
+                    Enter: x:60→0 opacity:0→1, spring
+  Theme switch: preview panel color transition 0.4s ease (CSS transition)
+  Form field focus: border glow pulse 0.3s
+  Publish button: whileHover scale(1.02), whileTap scale(0.97)
+  Success confetti: 3 bursts (0s, 0.8s, 1.6s) via canvas-confetti
+  Success modal: y:100%→0, spring (stiffness:120, damping:22)
+  Checkmark SVG: stroke-dasharray animation 0.8s ease
+
+INVITATION PAGE:
+  Page load confetti: 3 bursts (0s, 0.8s, 1.6s)
+  Hero names: character-by-character spring, stagger 0.04s per letter
+  Couple photo: scale 0→1, spring, delay 0.9s
+  Mandala SVG: rotate 0→360, 80s linear infinite
+  Petal float: CSS keyframes, random per-petal duration/delay/path
+  Countdown numbers: live update every 1000ms (no animation needed — just text swap)
+  Events: alternating x slide-in on useInView scroll trigger
+  Gallery: useInView, stagger 0.08s, scale 0.9→1 opacity 0→1
+  Lightbox open: opacity 0→1, photo scale 0.95→1, 0.25s
+  Lightbox photo change: cross-fade (AnimatePresence, 0.25s)
+  RSVP submit: loading spinner, success heart pulse (CSS scale keyframe)
+  RSVP error: x shake (0→6→-6→0, 0.4s)
+  Closing section: confetti burst on useInView trigger
+
+GENERAL:
+  Framer Motion: prefers-reduced-motion respected
+    (if user prefers reduced motion, all Framer Motion animations disabled)
+  CSS transitions: always include transition-all duration-300 ease-in-out
+  No jank: use will-change: transform on animated elements
+
+================================================================================
+  16. MOBILE-SPECIFIC REQUIREMENTS (PRIMARY — CRITICAL)
+================================================================================
+
+TARGET SIZES: 320px, 375px, 390px, 414px width screens
+ORIENTATION: Portrait primary (no horizontal layout assumptions)
+
+LAYOUT RULES:
+  - NO horizontal overflow anywhere (except intentional snap-scroll carousels)
+  - All padding: minimum px-4 (16px each side) — never flush to edge
+  - All text: never wraps awkwardly — test at 320px width
+  - All sections: 100% width, no fixed widths without max-w
+
+TOUCH TARGETS:
+  - All buttons: minimum height 48px (44px Apple HIG, 48px Material)
+  - All inputs: minimum height 48px
+  - All clickable icons: minimum 44x44px tap area (use padding if needed)
+  - Spacing between tappable items: minimum 8px
+
+INVITATION PAGE MOBILE RULES:
+  - Hero couple names: clamp(72px, 14vw, 96px) — NEVER below 60px
+  - Great Vibes font: NEVER below 48px in any section
+  - Countdown boxes: 2x2 grid, each box minimum 140px wide
+  - Events: full width cards (no side-by-side event layout)
+  - Gallery: 2-column masonry ONLY (never 3 on mobile)
+  - RSVP form inputs: minimum 48px height
+  - All CTA buttons: full width (w-full) on mobile
+  - Lightbox: images max-h-[80dvh], prev/next buttons large (52px)
+
+BUILDER MOBILE RULES:
+  - Tab bar: [✏️ Edit] [👁 Preview] — full width, 48px height each
+  - Only ONE panel visible at a time (form OR preview — never both)
+  - Photo selector grid: 4 columns (80px per photo on 375px screen)
+  - Step navigation buttons: full width, 48px height
+  - Form inputs: full width, 48px height minimum
+  - Accordion events: tap to expand (no hover states needed)
+
+LANDING PAGE MOBILE RULES:
+  - Hero CTAs: stacked vertically, full width each
+  - Stats bar: 2x2 grid (not 4-column row)
+  - Template showcase: horizontal scroll with snap (min-w-240px per card)
+  - Testimonials: horizontal scroll with snap (min-w-280px per card)
+  - Pricing: stacked vertically (1 column)
+  - Font sizes: always use clamp() — test at 320px
+
+PERFORMANCE ON MOBILE:
+  - All images: lazy loaded (next/image default), correct sizes prop
+  - No CSS blur/backdrop-filter stacking (max 1–2 layers — expensive on mobile GPU)
+  - Particle animations: DISABLED on mobile (motion too heavy)
+  - Petal animation: max 12 petals on mobile (24 on desktop)
+  - Canvas confetti: reduce particle count by 50% on mobile
+
+================================================================================
+  17. TABLET-SPECIFIC REQUIREMENTS
+================================================================================
+
+TARGET SIZES: 768px, 820px, 1024px (iPad Mini, iPad, iPad Pro)
+ORIENTATION: Both portrait and landscape must work
+
+LANDING PAGE TABLET:
+  - Hero: two-column layout (content left, phone mockup right) — same as desktop
+  - Features: 2-column grid (not 3)
+  - Template showcase: 2-column grid OR horizontal scroll
+  - Pricing: 3-column row (equal width)
+  - Testimonials: 2-column grid
+
+BUILDER TABLET:
+  - Option 1: Single column with floating "Preview" button (opens full-screen preview)
+  - Option 2: Top-bottom split (form 50% height, preview 50% height below)
+  - Preferred: Stacked vertical with a "Switch to Preview" sticky button
+  - Form inputs: comfortable spacing, 44px height
+
+INVITATION PAGE TABLET:
+  - Hero: wider max-w, names scale nicely with clamp (96px–110px)
+  - Countdown: 4-column row (same as desktop)
+  - Events: max-w-2xl centered, full-width cards
+  - Gallery: 3-column masonry (same as desktop)
+  - RSVP: max-w-lg centered card
+  - Closing section: couple photo larger (220px)
+  - Share section: 2-column layout (same as desktop)
+
+================================================================================
+  18. DESKTOP-SPECIFIC REQUIREMENTS
+================================================================================
+
+TARGET SIZES: 1280px, 1440px, 1920px
+EXPERIENCE: Enhanced with hover effects, larger typography, two-column layouts
+
+LANDING PAGE DESKTOP:
+  - Hero: two-column (content 55% + phone mockup 45%)
+  - Custom cursor: None needed (standard cursor)
+  - Max-w containers: max-w-7xl mx-auto for all sections
+  - Features: 3-column grid
+  - Template showcase: 3-column grid (no horizontal scroll)
+  - Pricing: 3-column, center card scale-105
+  - Testimonials: 4-column grid
+
+BUILDER DESKTOP:
+  - Two-column split: 45% form / 55% live preview (BOTH VISIBLE SIMULTANEOUSLY)
+  - Preview device toggle: Phone / Tablet / Desktop
+  - No tab bar needed
+  - Keyboard shortcuts: Ctrl+Enter = next step, Ctrl+P = toggle preview
+
+INVITATION PAGE DESKTOP:
+  - Max content width: max-w-4xl for text, max-w-6xl for gallery
+  - Couple photo: right-aligned in hero (not centered below names)
+  - Gallery: 3-column masonry with hover effects
+  - Events: max-w-2xl centered — not full width
+  - RSVP: max-w-md centered card
+  - Scroll behavior: smooth, no jumpiness
+  - Hover states: all interactive elements have hover feedback
+
+================================================================================
+  19. STICKY & FIXED ELEMENTS
+================================================================================
+
+LANDING PAGE:
+  Desktop: Sticky top navbar (if scrolled, backdrop-blur appears)
+  Mobile:  No sticky nav needed (simple header)
+
+BUILDER PAGE:
+  All viewports: Sticky top bar (logo + step + publish button)
+  Mobile:        Sticky tab bar below top bar [Edit] [Preview]
+  Desktop:       No additional sticky elements
+
+INVITATION PAGE:
+  All viewports: Scroll progress bar (fixed top, 3px rose gold)
+
+  Mobile ONLY — WhatsApp Share FAB:
+    Position: fixed bottom-6 right-6
+    Size: 56x56px circle
+    Background: #25D366
+    Icon: WhatsApp SVG, white, 28px
+    Pulse ring: expanding circle animation (scale 1→1.5 opacity 0.5→0, 2s infinite)
+    onClick: wa.me share
+
+  Desktop ONLY — WhatsApp Share bar:
+    Position: fixed bottom-0 left-0 right-0
+    Height: 56px
+    Background: #25D366 with slight gradient
+    Content: "💬 Share with your guests via WhatsApp" center + share button right
+    Framer Motion: y: 56 → 0 after 3s page load
+
+  Music Player (if musicEnabled) — ALL viewports:
+    Mobile:  Fixed bottom-left (above WhatsApp FAB), glass pill 180px wide
+    Desktop: Fixed bottom-center, glass pill 240px wide
+    Content: Music note icon (pulse when playing) + song name + pause/play button
+    Auto-plays: on first user interaction anywhere on page
+    prefers-reduced-motion: respect (no auto-play)
+
+================================================================================
+  20. SHARING FEATURES (WHATSAPP PRIORITY)
+================================================================================
+
+WhatsApp Share Message (pre-filled, ready to send):
+  Line 1: "💌 [Groom] & [Bride] are getting married! 🎊"
+  Line 2: (blank)
+  Line 3: "Join us for the celebrations on [wedding main date]."
+  Line 4: (blank)
+  Line 5: "View their digital invitation:"
+  Line 6: "https://shaadipage.in/wedding/[slug]"
+  Line 7: (blank)
+  Line 8: "[hashtag if provided]"
+
+Implementation:
+  Mobile: navigator.share() API first (native share sheet on iOS/Android)
+          Fallback if not supported: window.open("https://wa.me/?text=...")
+
+  Desktop: window.open("https://wa.me/?text=" + encodeURIComponent(message), '_blank')
+
+UTM Parameters (append to shared URL for tracking):
+  ?utm_source=whatsapp&utm_medium=share&utm_campaign=wedding-invite
+
+Other sharing:
+  Copy Link: navigator.clipboard.writeText(URL), feedback "✓ Copied!" 2s
+  Download  : html2canvas on invitation hero section → PNG download (Premium)
+
+================================================================================
+  21. FILE & FOLDER STRUCTURE
+================================================================================
+
+/app
+  layout.tsx                           ← Root layout, fonts, metadata
+  page.tsx                             ← Landing page
+  globals.css                          ← Tailwind base + custom CSS vars + scrollbar
+  /builder
+    page.tsx                           ← Builder (form + live preview)
+  /wedding
+    /[slug]
+      page.tsx                         ← Guest invitation page
+      loading.tsx                      ← Loading skeleton
+      not-found.tsx                    ← 404 for invalid slugs
+  /dashboard
+    /[slug]
+      page.tsx                         ← RSVP dashboard
+  /api
+    /weddings
+      /create
+        route.ts
+      /[slug]
+        route.ts
+    /rsvp
+      /[slug]
+        route.ts
+    /check-slug
+      route.ts
+
+/components
+  /landing
+    Hero.tsx
+    StatsBar.tsx
+    Features.tsx
+    TemplateShowcase.tsx
+    HowItWorks.tsx
+    Pricing.tsx
+    Testimonials.tsx
+    LandingFooter.tsx
+    FloatingPetals.tsx                 ← Reusable petal animation component
+
+  /builder
+    BuilderLayout.tsx                  ← Handles mobile tabs vs desktop split
+    FormPanel.tsx
+    PreviewPanel.tsx
+    StepIndicator.tsx
+    DeviceToggle.tsx
+    PublishModal.tsx                   ← Success modal with confetti
+    ThemeSelector.tsx
+    TemplateSelector.tsx
+    PhotoSelector.tsx                  ← Photo grid with selection state
+    /steps
+      Step1Couple.tsx
+      Step2Events.tsx
+      Step3Gallery.tsx
+      Step4Design.tsx
+      Step5Publish.tsx
+
+  /invitation
+    WeddingPage.tsx                    ← Orchestrates template + sections
+    ScrollProgressBar.tsx
+    /sections
+      CoverHero.tsx
+      CountdownTimer.tsx
+      EventsTimeline.tsx
+      LoveStory.tsx
+      PhotoGallery.tsx
+      Lightbox.tsx
+      RSVPForm.tsx
+      ShareContact.tsx
+      ClosingSection.tsx
+    /templates
+      Template1RoseGarden.tsx
+      Template2RoyalIndigo.tsx
+      Template3EmeraldTradition.tsx
+      Template4MidnightGlamour.tsx
+      Template5BlushRomance.tsx
+      Template6SaffronFestival.tsx
+    StickyWhatsApp.tsx                 ← FAB mobile + bar desktop
+    MusicPlayer.tsx                    ← Fixed glass pill player
+
+  /ui
+    Button.tsx
+    Input.tsx
+    Textarea.tsx
+    Toggle.tsx
+    PillRadio.tsx
+    DatePicker.tsx
+    TimePicker.tsx
+    LoadingSpinner.tsx
+    Toast.tsx                          ← react-hot-toast wrapper
+    ConfettiEffect.tsx                 ← canvas-confetti wrapper
+
+  /ornaments
+    LotusOrnament.tsx                  ← SVG lotus divider component
+    FloralBorder.tsx                   ← SVG floral top/bottom borders
+    MughalArch.tsx                     ← SVG for Template 2
+    KolamPattern.tsx                   ← CSS kolam for Template 3
+    MandalaBg.tsx                      ← Rotating mandala SVG
+
+/store
+  useBuilderStore.ts                   ← zustand store
+
+/lib
+  mongodb.ts                           ← MongoDB connection
+  weddingThemes.ts                     ← Theme color definitions export
+  musicTracks.ts                       ← Track list array
+  slugGenerator.ts                     ← nanoid + name-based slug logic
+  formatDate.ts                        ← date-fns helpers
+
+/models
+  Wedding.ts                           ← Mongoose schema
+  RSVP.ts                              ← Mongoose schema
+
+/types
+  wedding.ts                           ← All TypeScript interfaces
+
+/public
+  /og                                  ← OG images for social sharing
+  favicon.ico
+
+================================================================================
+  22. ENVIRONMENT VARIABLES
+================================================================================
+
+Required in .env.local:
+
+  MONGODB_URI=mongodb+srv://[user]:[pass]@cluster.mongodb.net/shaadipage
+  NEXTAUTH_SECRET=[random 32-char string]
+  NEXT_PUBLIC_BASE_URL=https://shaadipage.in
+
+Optional (for future upload feature):
+  CLOUDINARY_CLOUD_NAME=
+  CLOUDINARY_API_KEY=
+  CLOUDINARY_API_SECRET=
+  NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=
+
+================================================================================
+  23. PERFORMANCE REQUIREMENTS
+================================================================================
+
+CORE WEB VITALS TARGETS:
+  LCP (Largest Contentful Paint) : < 2.5 seconds on mobile 4G
+  FID (First Input Delay)        : < 100ms
+  CLS (Cumulative Layout Shift)  : < 0.1
+
+IMAGE OPTIMIZATION:
+  - All next/image with correct sizes prop:
+    Hero: sizes="100vw"
+    Couple photo circle: sizes="(max-width:768px) 180px, 260px"
+    Gallery: sizes="(max-width:768px) 50vw, 33vw"
+    Testimonial avatars: sizes="64px"
+  - loading="lazy" on all non-hero images
+  - priority={true} on hero image only
+
+FONT LOADING:
+  - next/font/google with display: 'swap' for all fonts
+  - Preload: Great Vibes (used above fold in hero)
+  - Preload: Cormorant Garamond (used above fold)
+
+ANIMATION PERFORMANCE:
+  - All Framer Motion transforms use: translateX/Y (GPU accelerated)
+  - will-change: transform on animated elements (add/remove dynamically)
+  - Particles: DISABLED on mobile (prefers-reduced-motion || window.width < 768)
+  - Petal count: 12 mobile, 24 desktop
+  - Confetti: 80 particles mobile, 120 desktop
+
+CODE SPLITTING:
+  - Each invitation template: dynamic import with loading skeleton
+  - Lightbox: dynamic import (not loaded until first gallery click)
+  - MusicPlayer: dynamic import (only if musicEnabled)
+  - Canvas-confetti: dynamic import
+
+================================================================================
+  24. FINAL EXPERIENCE GOALS
+================================================================================
+
+FOR COUPLES (builder experience):
+  - Zero to published invitation in under 10 minutes
+  - Every field change must feel instant in the live preview
+  - The moment they see their names in Great Vibes font, they should smile
+  - Publishing should feel like a celebration (confetti + beautiful success modal)
+  - Sharing to WhatsApp must be ONE TAP — pre-filled, ready to send
+
+FOR GUESTS (invitation experience):
+  - Opening the link on WhatsApp should feel like receiving a premium printed card
+  - The confetti on page load must delight, not annoy
+  - The countdown timer must make them excited
+  - RSVP form must be trivially easy (3 taps + submit)
+  - WhatsApp share button must be always accessible (sticky FAB)
+
+BUSINESS GOALS:
+  - Free plan must feel valuable (not broken/limited in ways that frustrate)
+  - Premium must feel like an obvious upgrade at ₹999 (one-time)
+  - Product should work reliably for non-tech-savvy users
+  - Indian market focus: rupee pricing, Indian names, regional languages,
+    multi-event support, WhatsApp-first sharing
+
+TECHNICAL QUALITY:
+  - Zero TypeScript errors (strict mode, no any)
+  - Zero console errors or warnings
+  - All forms validated with clear error messages
+  - All images with proper alt text
+  - All interactive elements keyboard accessible
+  - "use client" directive on all interactive components
+  - Build must pass: npm run build with zero errors
+
+================================================================================
+  END OF REQUIREMENTS DOCUMENT
+  ShaadiPage v1.0 | ERK Enterprises | 2025
+================================================================================
+```
