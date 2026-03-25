@@ -1,0 +1,72 @@
+import { WeddingFormData } from "@/types/wedding";
+
+export const demoWedding: WeddingFormData = {
+  brideName: "Priya",
+  groomName: "Rahul",
+  brideFamily: "D/O Mr. & Mrs. Sharma",
+  groomFamily: "S/O Mr. & Mrs. Verma",
+  loveStory:
+    "We met at a college fest in 2019 and knew instantly. After 5 years of laughter, adventures, and love, we are finally making it official. Thank you for being part of our journey.",
+  couplePhoto:
+    "https://images.pexels.com/photos/1444442/pexels-photo-1444442.jpeg?w=1200&q=80",
+  hashtag: "#RahulWedsPriya",
+  customMessage:
+    "With the blessings of our families, we joyfully invite you to celebrate our wedding. Your presence will make our day complete.",
+  language: "en",
+  events: [
+    {
+      name: "Mehendi Ceremony",
+      date: "2025-10-10",
+      time: "16:00",
+      venueName: "Sharma Residence",
+      venueAddress: "42, Linking Road, Bandra, Mumbai 400050",
+      mapsLink: "https://maps.google.com",
+      dressCode: "Colourful Traditional",
+    },
+    {
+      name: "Sangeet Night",
+      date: "2025-10-11",
+      time: "19:00",
+      venueName: "The Grand Ballroom",
+      venueAddress: "Hotel Taj Lands End, Bandra, Mumbai",
+      mapsLink: "https://maps.google.com",
+      dressCode: "Ethnic Wear | Lehenga/Sherwani",
+    },
+    {
+      name: "Wedding Ceremony",
+      date: "2025-10-12",
+      time: "10:30",
+      venueName: "ISKCON Temple Hall",
+      venueAddress: "Hare Krishna Land, Juhu, Mumbai 400049",
+      mapsLink: "https://maps.google.com",
+      dressCode: "Traditional | Saree / Dhoti",
+    },
+    {
+      name: "Reception",
+      date: "2025-10-12",
+      time: "19:30",
+      venueName: "The Grand Palace Banquet",
+      venueAddress: "JW Marriott Hotel, Juhu, Mumbai",
+      mapsLink: "https://maps.google.com",
+      dressCode: "Formal / Indo-Western",
+    },
+  ],
+  gallery: [
+    "https://images.pexels.com/photos/1045541/pexels-photo-1045541.jpeg?w=800&q=80",
+    "https://images.pexels.com/photos/169198/pexels-photo-169198.jpeg?w=800&q=80",
+    "https://images.pexels.com/photos/1024993/pexels-photo-1024993.jpeg?w=800&q=80",
+    "https://images.pexels.com/photos/1616113/pexels-photo-1616113.jpeg?w=1200&q=80",
+    "https://images.pexels.com/photos/265906/pexels-photo-265906.jpeg?w=600&q=80",
+    "https://images.pexels.com/photos/265722/pexels-photo-265722.jpeg?w=800&q=80",
+    "https://images.pexels.com/photos/931177/pexels-photo-931177.jpeg?w=1200&q=80",
+    "https://images.pexels.com/photos/587741/pexels-photo-587741.jpeg?w=600&q=80",
+  ],
+  template: 1,
+  colorTheme: "rose-gold",
+  musicEnabled: false,
+  musicTrack: null,
+  rsvpEnabled: true,
+  rsvpDeadline: "2025-10-01",
+  plan: "premium",
+  slug: "demo",
+};

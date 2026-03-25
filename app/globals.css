@@ -1,0 +1,141 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary: #B76E79;
+  --color-accent: #D4A574;
+  --color-bg: #FDF6F0;
+  --color-dark: #2C1810;
+
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(183, 110, 121, 0.3);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(183, 110, 121, 0.5);
+}
+
+/* Horizontal snap scroll */
+.snap-scroll {
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.snap-scroll > * {
+  scroll-snap-align: start;
+}
+
+.snap-scroll::-webkit-scrollbar {
+  display: none;
+}
+.snap-scroll {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Fluid typography — mobile-optimized */
+@layer utilities {
+  .text-couple-name {
+    font-size: clamp(40px, 10vw, 120px);
+  }
+  .text-section-heading {
+    font-size: clamp(28px, 5vw, 60px);
+  }
+  .text-landing-h1 {
+    font-size: clamp(36px, 8vw, 96px);
+  }
+  .text-landing-h1-script {
+    font-size: clamp(42px, 10vw, 110px);
+  }
+  .text-landing-section {
+    font-size: clamp(28px, 5vw, 52px);
+  }
+  .text-countdown {
+    font-size: clamp(32px, 8vw, 72px);
+  }
+  .text-monogram {
+    font-size: clamp(56px, 12vw, 120px);
+  }
+  .text-body-fluid {
+    font-size: clamp(14px, 1.5vw, 18px);
+  }
+}
+
+/* Petal shape */
+.petal {
+  border-radius: 50% 0 50% 0;
+}
+
+/* Glass morphism */
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.glass-dark {
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Theme color transition */
+.theme-transition {
+  transition: color 0.4s ease, background-color 0.4s ease, border-color 0.4s ease, fill 0.4s ease;
+}
+
+/* Dynamic viewport height fallback */
+@supports not (height: 100dvh) {
+  .h-screen-dynamic {
+    height: 100vh;
+  }
+  .min-h-screen-dynamic {
+    min-height: 100vh;
+  }
+}
+@supports (height: 100dvh) {
+  .h-screen-dynamic {
+    height: 100dvh;
+  }
+  .min-h-screen-dynamic {
+    min-height: 100dvh;
+  }
+}
